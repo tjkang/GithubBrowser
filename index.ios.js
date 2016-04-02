@@ -9,6 +9,7 @@ import React, {
 
 var Login = require('./Login');
 var AuthService = require('./AuthService');
+var AppContainer = require('./AppContainer');
 
 class GithubBrowser extends Component {
   constructor(props){
@@ -44,9 +45,7 @@ class GithubBrowser extends Component {
 
     if(this.state.isLoggedIn){
       return(
-        <View style={styles.container}>
-          <Text style={styles.welcome}>Logged in</Text>
-        </View>
+        <AppContainer />
       )
     }
     else {
