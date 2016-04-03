@@ -8,10 +8,12 @@ var {
   ListView,
   Component,
   ActivityIndicatorIOS,
-  Image
+  Image,
+  TouchableHighlight,
 } = React;
 
 var moment = require('moment');
+var PushPayload = require('./PushPayload');
 
 class Feed extends Component {
   constructor(props) {
@@ -34,11 +36,8 @@ class Feed extends Component {
   fetchFeed() {
     require('./AuthService').getAuthInfo((err, authInfo) => {
       //TO DO error handling
-      console.log(err);
 
-      var url = 'https://api.github.com/orgs/'
-        + 'github'
-        + '/events';
+      var url = 'https://api.github.com/events';
       // var url = 'https://api.github.com/users/'
       //   + authInfo.user.login
       //   + '/received_events';
@@ -48,55 +47,63 @@ class Feed extends Component {
       })
       .then((response)=> response.json())
       .then((responseData) => {
-        var feedItems = responseData.filter((ev) => ev.type == 'WatchEvent');
+        var feedItems = responseData.filter((ev) => ev.type == 'PushEvent');
         this.setState({
-          dataSource: this.state.dataSource.cloneWithRows(responseData), //필터링 된 데이터는 별로 없어서 일단 필터링없는걸로
+          dataSource: this.state.dataSource.cloneWithRows(feedItems),
           showProgress: false
         })
       })
     });
   }
 
+  pressRow(rowData) {
+    this.props.navigator.push({
+      title: 'Push Event',
+      component: PushPayload,
+      passProps: {
+        pushEvent: rowData
+      }
+    });
+  }
+
   renderRow(rowData) {
     return (
-      <View style={{
-          flex: 1,
-          flexDirection: 'row',
-          padding: 20,
-          alignItems: 'center',
-          borderColor: '#D7D7D7',
-          borderBottomWidth: 1
-      }}>
-        <Image
-          source={{uri: rowData.actor.avatar_url}}
-          style={{
-            height: 36,
-            width: 36,
-            borderRadius: 18
-          }}
-        />
-
+      <TouchableHighlight
+        onPress={() => this.pressRow(rowData)}
+        underlayColor='#ddd'
+      >
         <View style={{
-          paddingLeft: 20
+            flex: 1,
+            flexDirection: 'row',
+            padding: 20,
+            alignItems: 'center',
+            borderColor: '#D7D7D7',
+            borderBottomWidth: 1
         }}>
-          <Text style={{backgroundColor: '#fff'}}>
-            {moment(rowData.created_at).fromNow()}
-          </Text>
-          <Text style={{backgroundColor: '#fff'}}>
-            {rowData.type}
-          </Text>
-          <Text style={{backgroundColor: '#fff'}}>
-            from <Text style={{
-              fontWeight: '600'
-            }}>{rowData.actor.login}</Text>
-          </Text>
-          <Text style={{backgroundColor: '#fff'}}>
-            at <Text style={{
-              fontWeight: '600'
-            }}>{rowData.repo.name.replace('github/', '')}</Text>
-          </Text>
+          <Image
+            source={{uri: rowData.actor.avatar_url}}
+            style={{
+              height: 36,
+              width: 36,
+              borderRadius: 18
+            }}
+          />
+
+          <View style={{
+            paddingLeft: 20
+          }}>
+            <Text>{moment(rowData.created_at).fromNow()}</Text>
+            <Text>{rowData.actor.login} pushed to</Text>
+            <Text>{rowData.payload.ref.replace('refs/heads/', '')}</Text>
+            <Text>at
+              <Text style={{
+                fontWeight: '600'
+              }}> {rowData.repo.name}
+              </Text>
+            </Text>
+          </View>
         </View>
-      </View>
+      </TouchableHighlight>
     );
   }
 
