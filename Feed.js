@@ -78,7 +78,8 @@ class Feed extends Component {
             padding: 20,
             alignItems: 'center',
             borderColor: '#D7D7D7',
-            borderBottomWidth: 1
+            borderBottomWidth: 1,
+            backgroundColor: '#fff'
         }}>
           <Image
             source={{uri: rowData.actor.avatar_url}}
@@ -113,7 +114,6 @@ class Feed extends Component {
         <View style={{
             flex: 1,
             justifyContent: 'center',
-            backgroundColor: '#fff'
         }}>
           <ActivityIndicatorIOS size="large" animating={true} />
         </View>
@@ -123,8 +123,8 @@ class Feed extends Component {
       <View style={{
           flex: 1,
           justifyContent: 'flex-start',
-          paddingTop:20,
-          backgroundColor: '#fff'
+          paddingTop: 65,
+          paddingBottom: 50, //paddingTop 과 paddingBottom을 꼭 기입하여야하나? top navigation 과 bottom tab bar를 use할때
       }}>
         <ListView
           dataSource={this.state.dataSource}

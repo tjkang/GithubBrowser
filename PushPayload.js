@@ -85,6 +85,7 @@ class PushPayload extends Component {
           }}
           dataSource={this.state.dataSource}
           renderRow={this.renderRow.bind(this)} />
+
       </View>
     );
   }
